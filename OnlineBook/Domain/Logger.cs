@@ -2,7 +2,7 @@
 
 namespace BookstoreInventoryApp.Domain
 {
-    public class Logger : ILogger
+    public class Logger :ILogger
     {
         public void Log(string message)
         {
