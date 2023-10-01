@@ -1,191 +1,123 @@
-﻿## TOPIC : SOLID Principles
+﻿## TOPIC : Creational Design Patterns
 ### Course: Software Design Techniques and Mechanisms
 ### Author: Paladi Inga, FAF-212
 
 ## Theory
- SOLID is a set of five object-oriented design principles intended to make software designs more maintainable, flexible, and easy to understand. The acronym stands for Single Responsibility Principle, Open-Closed Principle, Liskov Substitution Principle, Interface Segregation Principle, and Dependency Inversion Principle. Each principle addresses a specific aspect of software design, such as the organization of responsibilities, the handling of dependencies, and the design of interfaces. By following these principles, software developers can create more modular, testable, and reusable code that is easier to modify and extend over time. These principles are widely accepted and adopted in the software development community and can be applied to any object-oriented programming language.
+ Creational design patterns are a category of design patterns that focus on the process of object creation. They provide a way to create objects in a flexible and controlled manner, while decoupling the client code from the specifics of object creation. Creational design patterns address common problems encountered in object creation, such as how to create objects with different initialization parameters, how to create objects based on certain conditions, or how to ensure that only a single instance of an object is created. There are several creational design patterns that have their own strengths and weaknesses. Each of it is best suited for solving specific problems related to object creation. By using creational design patterns, developers can improve the flexibility, maintainability, and scalability of their code.
+- Singleton
+- Builder
+- Prototype
+- Object Pooling
+- Factory Method
+- Abstract Factory
 
 
 ## Objectives:
-* Study and understand the SOLID Principles.
-*  Choose a domain, define its main classes/models/entities and choose the appropriate instantiation mechanisms.
-*  Create a sample project that respects SOLID Principles.
-
+* Study and understand the Creational Design Patterns.
+* Choose a domain, define its main classes/models/entities and choose the appropriate instantiation mechanisms.
+* Use some creational design patterns for object instantiation in a sample project.
 ## Main tasks:
 * Choose an OO programming language and a suitable IDE or Editor (No frameworks/libs/engines allowed).
 * Select a domain area for the sample project.
-* Define the main involved classes and think about what instantia
-tion mechanisms are needed.
-*  Respect SOLID Principles in your project.
+* Define the main involved classes and think about what instantiation mechanisms are needed.
+* Based on the previous point, implement at least 2 creational design patterns in your project.
 
 
 
 ## Implementation description
-1. Single Responsibility Principle (SRP):
-Each class in this project has a single responsibility.
-For example, the `AddBookCommand` class is responsible for 
-adding a book, the `UserInterface` class manages user
-interactions, and the `BookService` class handles
-book-related operations. These classes do not have
-multiple responsibilities.
+1. Factory Method
+The Factory Method Pattern is used to create objects without specifying the exact class  of object that will be created 
+The `BookFactory` class serves as a factory for creating `Book` objects
 ```
-public class UserInterface
+namespace BookstoreInventoryApp.Factory
+{
+    public class BookFactory
     {
-        private readonly Dictionary<int, ICommand> commands;
-
-        public UserInterface(Dictionary<int, ICommand> commands)
+        public Book CreateBook(string title, string author, string isbn, decimal price, int quantity)
         {
-            this.commands = commands;
-        }
-
-        public void Run()
-        {
-            while (true)
+            return new Book
             {
-                Console.WriteLine("Bookstore Inventory Management");
-                Console.WriteLine("1. Add Book");
-                Console.WriteLine("2. Remove Book");
-                Console.WriteLine("3. List Books");
-                Console.WriteLine("4. Search Books");
-                Console.WriteLine("5. Exit");
-                Console.Write("Enter your choice: ");
-
-                if (int.TryParse(Console.ReadLine(), out int choice))
-                {
-                    if (commands.TryGetValue(choice, out ICommand command))
-                    {
-                        command.Execute();
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid choice. Please try again.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Invalid input. Please enter a number.");
-                }
-
-                Console.WriteLine();
-            }
+                Title = title,
+                Author = author,
+                ISBN = isbn,
+                Price = price,
+                Quantity = quantity
+            };
         }
     }
+}
 ``` 
-2. Open/Closed Principle (OCP):
-The code is open for extension and closed for 
-modification. You can add new commands by creating new 
-classes that implement the `ICommand` interface without 
-modifying existing code. For example, adding a new command 
-for updating a book would not require changes to the existing
-classes
+The `CreateBook` method in the BookFactory class creates instances of the `Book` class, encapsulating the object creation logic and providing a way to create `Book` objects with specific attributes.
+2. Builder Pattern
+The Builder Patter is used to construct complex object step by step. The `BookBuilder` class demonstrates this.
 ```
-namespace BookstoreInventoryApp.Client
+public class BookBuilder
 {
-    public interface ICommand
+    // ... (methods to set individual properties)
+
+    public Book Build()
     {
-        void Execute();
+        return new Book
+        {
+            Title = title,
+            Author = author,
+            ISBN = isbn,
+            Price = price,
+            Quantity = quantity
+        };
     }
 }
-
 ```
-3. Liskov Substitution Principle (LSP)
-UserInterface class takes a list of ICommand objects, 
-and it uses the Execute method on these objects when 
-the user selects a command (e.g., "Add Book" or
-"Remove Book"). This behavior ensures that different 
-command implementations can be seamlessly plugged into 
-the user interface without 
-changing the core logic of the interface.
-    `ICommand` interface, which serves as the base class (or contract) for all command-related operations. This interface ensures that all derived command classes (such as EditBookCommand and RemoveBookCommand) implement the Execute method, allowing them to be used interchangeably
-where an ICommand is expected.
+We can use `BookBuilder`to set various properties of a `Book` object using a interface and then call the `Build` method to create the `Book` object with the specified properties.
+3. Prototype Pattern
+The Prototype Pattern is used to create new objects by copying an existing object, known as a prototype. In this code, the  `Bookprototype`  class demonstrates this pattern.
 ```
-public class RemoveBookCommand : ICommand
-    {
-        private readonly IBookService bookService;
-
-        public RemoveBookCommand(IBookService bookService)
-        {
-            this.bookService = bookService;
-        }
-
-        public void Execute()
-        {
-            Console.WriteLine("Remove Book");
-            Console.Write("Enter the book ID to remove: ");
-
-            if (int.TryParse(Console.ReadLine(), out int bookId))
-            {
-                bookService.RemoveBook(bookId);
-                Console.WriteLine("Book removed successfully.");
-            }
-            else
-            {
-                Console.WriteLine("Invalid book ID. Please enter a valid number.");
-            }
-        }
-    }
-```
-4.Interface Segregation Principle (ISP):
-
-The interfaces (`ICommand`, `IBookService`, `ILogger`) are
-focused on specific contracts, and classes only implement
-the methods that are relevant to their responsibilities. 
-For instance, `IBookService` includes methods 
-related to book
-management, 
-while `ILogger` includes only the Log method.
-```
-public interface ILogger
-    {
-        void Log(string message);
-    }
-```
-5. Dependency Inversion Principle (DIP):
-tates that high-level modules should not depend on low-level modules
-The Logger class implements the `ILogger` interface.
-This allows the `Logger` class to act as a concrete 
-implementation of the logging functionality, but it does so by adhering to an interface.
-In this code, the `BookService` class depends on `ILogger`,
-which is an abstraction (interface) rather than a specific implementation.
-This adherence to the interface (ILogger) follows the DIP principle because high-level modules (e.g., BookService) depend on abstractions 
-(ILogger).
-```
-// ILogger interface
-public interface ILogger
+public class BookPrototype
 {
-    void Log(string message);
+    public string Title { get; set; }
+    public string Author { get; set; }
+    public string ISBN { get; set; }
+    public decimal Price { get; set; }
+    public int Quantity { get; set; }
+
+    public Book Clone()
+    {
+        return new Book
+        {
+            Title = this.Title,
+            Author = this.Author,
+            ISBN = this.ISBN,
+            Price = this.Price,
+            Quantity = this.Quantity
+        };
+    }
 }
-
-// Logger class implementing ILogger
-public class Logger : ILogger
+```
+We can create a new `Book` object by calling the `Clone` method on a `BockPrototype`object, which copies the properties from the prototype and returns a new `Book` object.
+4. Singleton Pattern
+The Singleton Pattern ensures that a class has only one instance and provides a global point of access to that instance. In this code, the `Logger`class demonstrates this pattern.
+```public class Logger : ILogger
 {
+    private static Logger instance;
+
+    private Logger() { }
+
+    public static Logger GetInstance()
+    {
+        if (instance == null)
+        {
+            instance = new Logger();
+        }
+        return instance;
+    }
+
     public void Log(string message)
     {
         Console.WriteLine($"[LOG] {DateTime.Now}: {message}");
     }
 }
-
 ```
-Dependency injection is used in the BookService class to inject an ILogger instance.
-This means that the BookService class doesn't create or depend on a specific
-implementation of the logger;
-it relies on whatever implementation is provided through its constructor.
-This allows you to change the logging behavior by providing a different 
-implementation of ILogger without modifying the BookService class.
-```
-public class BookService : IBookService
-{
-    private readonly List<Book> books;
-    private readonly ILogger logger;
+The `Logger `class has a private constructor and a static `GetInstance `method, which ensures that only one instance of `Logger `is created and returned throughout the application. This provides a centralized logging mechanism.
 
-    public BookService(ILogger logger)
-    {
-        this.books = new List<Book>();
-        this.logger = logger; 
-    }
-
-    ...
-}
-```
 ## Conclusion
-In this laboratory work, we have demonstrated how the application of SOLID principles can lead to code that is not only more straightforward to comprehend but also easier to maintain and expand upon. These guiding principles significantly contribute to the creation of robust and adaptable software systems that are less susceptible to defects and more readily adjustable to evolving requirements.
+In this laboratory work, we had to demonstrated how the application can use various creational design patterns. By implementing these creational design patterns, the 'Bookstore Inventory Management' application achieves several benefits, including separation of object creation logic, improved code maintainability, flexibility to create different types of objects, and efficient object creation processes. These patterns contribute to a more organized and scalable codebase, making it easier to extend and enhance the application in the future.
