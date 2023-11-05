@@ -1,4 +1,4 @@
-﻿## TOPIC : Structural Design Patterns
+## TOPIC : Structural Design Patterns
 ### Course: Software Design Techniques and Mechanisms
 ### Author: Paladi Inga, FAF-212
 
