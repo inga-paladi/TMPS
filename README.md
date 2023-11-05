@@ -1,123 +1,97 @@
-﻿## TOPIC : Creational Design Patterns
+## TOPIC : Structural Design Patterns
 ### Course: Software Design Techniques and Mechanisms
 ### Author: Paladi Inga, FAF-212
 
 ## Theory
- Creational design patterns are a category of design patterns that focus on the process of object creation. They provide a way to create objects in a flexible and controlled manner, while decoupling the client code from the specifics of object creation. Creational design patterns address common problems encountered in object creation, such as how to create objects with different initialization parameters, how to create objects based on certain conditions, or how to ensure that only a single instance of an object is created. There are several creational design patterns that have their own strengths and weaknesses. Each of it is best suited for solving specific problems related to object creation. By using creational design patterns, developers can improve the flexibility, maintainability, and scalability of their code.
-- Singleton
-- Builder
-- Prototype
-- Object Pooling
-- Factory Method
-- Abstract Factory
-
+Structural design patterns are a category of design patterns that focus on the composition of classes and objects to form larger structures and systems. They provide a way to organize objects and classes in a way that is both flexible and efficient, while allowing for the reuse and modification of existing code. Structural design patterns address common problems encountered in the composition of classes and objects, such as how to create new objects that inherit functionality from existing objects, how to create objects that share functionality without duplicating code, or how to define relationships between objects in a flexible and extensible way.
+Some examples of from this category of design patterns are:
+* Adapter
+* Bridge
+* Composite
+* Decorator
+* Facade
+* Flyweight
+* Proxy
 
 ## Objectives:
-* Study and understand the Creational Design Patterns.
-* Choose a domain, define its main classes/models/entities and choose the appropriate instantiation mechanisms.
-* Use some creational design patterns for object instantiation in a sample project.
-## Main tasks:
-* Choose an OO programming language and a suitable IDE or Editor (No frameworks/libs/engines allowed).
-* Select a domain area for the sample project.
-* Define the main involved classes and think about what instantiation mechanisms are needed.
-* Based on the previous point, implement at least 2 creational design patterns in your project.
+* Study and understand the Structural Design Patterns.
+* As a continuation of the previous laboratory work, think about the functionalities that your system will need to provide to the user.
+* Implement some additional functionalities, or create a new project using structural design patterns.
 
+
+## Main tasks:
+1.  By creating a new project, or extending your last one (Lab work Nr2), implement at least 2 structural design patterns in your project:
+
+* The implemented design pattern should help to perform the tasks involved in your system.
+* The object creation mechanisms/patterns can now be buried into the functionalities instead of using them into the client.
+There should only be one client for the whole system.
+2. Keep your files grouped (into packages/directories) by their responsibilities 
 
 
 ## Implementation description
-1. Factory Method
-The Factory Method Pattern is used to create objects without specifying the exact class  of object that will be created 
-The `BookFactory` class serves as a factory for creating `Book` objects
+1. Decorator Pattern
+ This pattern allows behavior to be added to an individual object, either statically or dynamically, without affecting the behavior of other objects from the same class. In this code, the `LoggingBookServiceDecorator` decorates the `IBookService` interface to add logging functionality. It intercepts calls to methods like `AddBook`, `EditBook`, and `RemoveBook`, logs the actions, and then delegates the call to the underlying bookService. For example, when a book is added or edited, the decorator logs the action using the provided logger.
 ```
-namespace BookstoreInventoryApp.Factory
+public class LoggingBookServiceDecorator : IBookService
 {
-    public class BookFactory
+    // ...
+    public void AddBook(Book book)
     {
-        public Book CreateBook(string title, string author, string isbn, decimal price, int quantity)
+        bookService.AddBook(book);
+        logger.Log($"Added book: {book.Title}");
+    }
+    // ...
+}
+```
+2. Facade Pattern
+The `OnlineBookFacade` acts as a facade that provides a simplified and unified interface to interact with the complex system of managing books.
+It hides the complexities of creating and using various components like `IBookServiceBridge`, `BookFactory`, and `BookFlyweightFactory`, making it easier for clients to use the system. 
+```
+public class OnlineBookFacade
+{
+    // ...
+    public void Run()
+    {
+        // ...
+        UserInterface ui = new UserInterface(commands, bookServiceBridge);
+        ui.Run();
+    }
+    // ...
+}
+```
+3. Flyweight Pattern
+The Flyweight pattern is used in the `BookFlyweight` and `BookFlyweightFactory` classes. It's designed to minimize memory usage when dealing with a large number of similar objects. In this case, it's used to create and manage book objects that share common data, such as title, author, and ISBN, in a memory-efficient way. The `BookFlyweightFactory` ensures that only one instance of a book with specific attributes is created and reused.
+```
+public class BookFlyweightFactory
+{
+    private Dictionary<string, IBookFlyweight> flyweights = new Dictionary<string, IBookFlyweight>();
+
+    public IBookFlyweight GetBookFlyweight(string title, string author, string isbn)
+    {
+        string key = $"{title}-{author}-{isbn}";
+        if (!flyweights.ContainsKey(key))
         {
-            return new Book
-            {
-                Title = title,
-                Author = author,
-                ISBN = isbn,
-                Price = price,
-                Quantity = quantity
-            };
+            flyweights[key] = new BookFlyweight(title, author, isbn);
         }
+        return flyweights[key];
     }
 }
-``` 
-The `CreateBook` method in the BookFactory class creates instances of the `Book` class, encapsulating the object creation logic and providing a way to create `Book` objects with specific attributes.
-2. Builder Pattern
-The Builder Patter is used to construct complex object step by step. The `BookBuilder` class demonstrates this.
 ```
-public class BookBuilder
+4. Bridge Pattern
+The Bridge pattern is employed in the `BookServiceBridge` class, which acts as an intermediary between the client code and the book service. It allows the client to interact with the book service through an abstract interface (`IBookServiceBridge`). This decouples the client code from the specific book service implementation (`IBookService`) and allows for easy substitution of different book service implementations without affecting the client code.
+```
+public class BookServiceBridge : IBookServiceBridge
 {
-    // ... (methods to set individual properties)
+    private readonly IBookService bookService;
 
-    public Book Build()
+    public BookServiceBridge(IBookService bookService)
     {
-        return new Book
-        {
-            Title = title,
-            Author = author,
-            ISBN = isbn,
-            Price = price,
-            Quantity = quantity
-        };
+        this.bookService = bookService;
     }
+
+    // Methods here act as a bridge to the actual book service implementation.
 }
+
 ```
-We can use `BookBuilder`to set various properties of a `Book` object using a interface and then call the `Build` method to create the `Book` object with the specified properties.
-3. Prototype Pattern
-The Prototype Pattern is used to create new objects by copying an existing object, known as a prototype. In this code, the  `Bookprototype`  class demonstrates this pattern.
-```
-public class BookPrototype
-{
-    public string Title { get; set; }
-    public string Author { get; set; }
-    public string ISBN { get; set; }
-    public decimal Price { get; set; }
-    public int Quantity { get; set; }
-
-    public Book Clone()
-    {
-        return new Book
-        {
-            Title = this.Title,
-            Author = this.Author,
-            ISBN = this.ISBN,
-            Price = this.Price,
-            Quantity = this.Quantity
-        };
-    }
-}
-```
-We can create a new `Book` object by calling the `Clone` method on a `BockPrototype`object, which copies the properties from the prototype and returns a new `Book` object.
-4. Singleton Pattern
-The Singleton Pattern ensures that a class has only one instance and provides a global point of access to that instance. In this code, the `Logger`class demonstrates this pattern.
-```public class Logger : ILogger
-{
-    private static Logger instance;
-
-    private Logger() { }
-
-    public static Logger GetInstance()
-    {
-        if (instance == null)
-        {
-            instance = new Logger();
-        }
-        return instance;
-    }
-
-    public void Log(string message)
-    {
-        Console.WriteLine($"[LOG] {DateTime.Now}: {message}");
-    }
-}
-```
-The `Logger `class has a private constructor and a static `GetInstance `method, which ensures that only one instance of `Logger `is created and returned throughout the application. This provides a centralized logging mechanism.
-
 ## Conclusion
-In this laboratory work, we had to demonstrated how the application can use various creational design patterns. By implementing these creational design patterns, the 'Bookstore Inventory Management' application achieves several benefits, including separation of object creation logic, improved code maintainability, flexibility to create different types of objects, and efficient object creation processes. These patterns contribute to a more organized and scalable codebase, making it easier to extend and enhance the application in the future.
+In this laboratory work, I have explored and applied four essential structural design patterns, namely the Decorator, Facade, Flyweight, and Bridge patterns, to create a well-structured and modular book inventory management system. Each pattern serves a distinct purpose in enhancing the system's functionality and maintainability. These design patterns have not only improved the code's organization and maintainability but also demonstrated their significance in building flexible and scalable software systems.

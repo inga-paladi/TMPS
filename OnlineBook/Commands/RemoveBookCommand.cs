@@ -1,15 +1,15 @@
 ﻿using System;
-using BookstoreInventoryApp.Domain;
+using OnlineBook.Domain;
 
-namespace BookstoreInventoryApp.Client.Commands
+namespace OnlineBook.Client.Commands
 {
     public class RemoveBookCommand : ICommand
     {
-        private readonly IBookService bookService;
+        private readonly IBookServiceBridge bookServiceBridge;
 
-        public RemoveBookCommand(IBookService bookService)
+        public RemoveBookCommand(IBookServiceBridge bookServiceBridge)
         {
-            this.bookService = bookService;
+            this.bookServiceBridge = bookServiceBridge;
         }
 
         public void Execute()
@@ -19,7 +19,7 @@ namespace BookstoreInventoryApp.Client.Commands
 
             if (int.TryParse(Console.ReadLine(), out int bookId))
             {
-                bookService.RemoveBook(bookId);
+                bookServiceBridge.RemoveBook(bookId);
                 Console.WriteLine("Book removed successfully.");
             }
             else

@@ -1,4 +1,4 @@
-﻿namespace BookstoreInventoryApp.Client
+﻿namespace OnlineBook.Client
 {
     public interface ICommand
     {

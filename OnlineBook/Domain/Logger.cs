@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BookstoreInventoryApp.Domain
+namespace OnlineBook.Domain
 {
     public class Logger :ILogger
     {
