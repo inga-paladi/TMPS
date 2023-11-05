@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace BookstoreInventoryApp.Domain
+namespace OnlineBook.Domain
 {
     public class Logger :ILogger
     {
         private static Logger instance;
-        private Logger() { }
+        public Logger() { }
         public static Logger GetInstance()
         {
             if (instance == null)

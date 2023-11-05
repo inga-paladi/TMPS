@@ -1,25 +1,17 @@
-﻿using BookstoreInventoryApp.Client.Commands;
-using BookstoreInventoryApp.Client;
-using BookstoreInventoryApp.Domain;
-using BookstoreInventoryApp.Factory;
+﻿using OnlineBook.Client.Commands;
+using OnlineBook.Client;
 using OnlineBook.Domain;
-
+using OnlineBook.Factory;
 static void Main(string[] args)
 {
-    ILogger logger = Logger.GetInstance();
-    IBookService bookService = new BookService(logger);
+    ILogger logger = new Logger();
+    IBookService bookService = new LoggingBookServiceDecorator(new BookService(logger), logger);
     BookFactory bookFactory = new BookFactory();
-    BookBuilder bookBuilder = new BookBuilder();
-    BookPrototype bookPrototype = new BookPrototype();
+    IBookServiceBridge bookServiceBridge = new BookServiceBridge(bookService);
+    BookFlyweightFactory flyweightFactory = new BookFlyweightFactory();
 
-    Dictionary<int, ICommand> commands = new Dictionary<int, ICommand>
-    {
-        { 1, new AddBookCommand(bookService,bookFactory, bookBuilder, bookPrototype) },
-        { 2, new RemoveBookCommand(bookService) },
-        { 3, new ListBooksCommand(bookService) },
-        { 4, new SearchBooksCommand(bookService) }
-    };
-
-    UserInterface ui = new UserInterface(commands);
-    ui.Run();
+    OnlineBookFacade facade = new OnlineBookFacade(bookServiceBridge, bookFactory, flyweightFactory );
+    facade.Run();
+    Console.ReadLine();
 }
+

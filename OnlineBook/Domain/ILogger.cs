@@ -1,4 +1,4 @@
-﻿namespace BookstoreInventoryApp.Domain
+﻿namespace OnlineBook.Domain
 {
     public interface ILogger
     {

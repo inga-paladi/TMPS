@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Input;
-using BookstoreInventoryApp.Domain;
-using BookstoreInventoryApp.Factory;
+using OnlineBook.Domain;
+using OnlineBook.Factory;
 
-namespace BookstoreInventoryApp.Client
+namespace OnlineBook.Client
 {
     public class UserInterface
     {
         private readonly Dictionary<int, ICommand> commands;
+        private readonly IBookServiceBridge bookServiceBridge;
 
-        public UserInterface(Dictionary<int, ICommand> commands)
+
+        public UserInterface(Dictionary<int, ICommand> commands, IBookServiceBridge bookServiceBridge)
         {
             this.commands = commands;
+            this.bookServiceBridge = bookServiceBridge;
         }
 
         public void Run()
@@ -21,10 +24,11 @@ namespace BookstoreInventoryApp.Client
             {
                 Console.WriteLine("Bookstore Inventory Management");
                 Console.WriteLine("1. Add Book");
-                Console.WriteLine("2. Remove Book");
-                Console.WriteLine("3. List Books");
-                Console.WriteLine("4. Search Books");
-                Console.WriteLine("5. Exit");
+                Console.WriteLine("2. Edit Book");
+                Console.WriteLine("3. Remove Book");
+                Console.WriteLine("4. List Books");
+                Console.WriteLine("5. Search Books");
+                Console.WriteLine("6. Exit");
                 Console.Write("Enter your choice: ");
 
                 if (int.TryParse(Console.ReadLine(), out int choice))
@@ -32,6 +36,11 @@ namespace BookstoreInventoryApp.Client
                     if (commands.TryGetValue(choice, out ICommand command))
                     {
                         command.Execute();
+                    }
+                    else if (choice == 6)
+                    {
+                        Console.WriteLine("Exiting the application.");
+                        break;  // Exit the loop and end the program
                     }
                     else
                     {

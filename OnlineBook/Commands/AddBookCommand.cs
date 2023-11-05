@@ -1,20 +1,19 @@
 ﻿using System;
-using BookstoreInventoryApp.Domain;
-using BookstoreInventoryApp.Factory;
 using OnlineBook.Domain;
+using OnlineBook.Factory;
 
-namespace BookstoreInventoryApp.Client.Commands
+namespace OnlineBook.Client.Commands
 {
     public class AddBookCommand : ICommand
     {
-        private readonly IBookService bookService;
+        private readonly IBookServiceBridge bookServiceBridge;
         private readonly BookFactory bookFactory;
         private readonly BookBuilder bookBuilder;
         private readonly BookPrototype bookPrototype;
 
-        public AddBookCommand(IBookService bookService, BookFactory bookFactory, BookBuilder bookBuilder, BookPrototype bookPrototype)
+        public AddBookCommand(IBookServiceBridge bookServiceBridge, BookFactory bookFactory)
         {
-            this.bookService = bookService;
+            this.bookServiceBridge = bookServiceBridge;
             this.bookFactory = bookFactory;
             this.bookBuilder = bookBuilder;
             this.bookPrototype = bookPrototype;
@@ -35,14 +34,14 @@ namespace BookstoreInventoryApp.Client.Commands
                 {
                     // Use the Factory Method to create a new book
                     Book book = bookFactory.CreateBook("Title", "Author", "ISBN", 29.99m, 10);
-                    bookService.AddBook(book);
+                    bookServiceBridge.AddBook(book);
                     Console.WriteLine("Book added successfully using Factory Method.");
                 }
                 else if (choice == 2)
                 {
                     // Use the Builder Pattern to construct a new book
                     Book book = CreateBookWithBuilder();
-                    bookService.AddBook(book);
+                    bookServiceBridge.AddBook(book);
                     Console.WriteLine("Book added successfully using Builder Pattern.");
                 }
                 else
@@ -73,13 +72,9 @@ namespace BookstoreInventoryApp.Client.Commands
 
                 if (int.TryParse(Console.ReadLine(), out int quantity))
                 {
-                    return bookBuilder
-                        .WithTitle(title)
-                        .WithAuthor(author)
-                        .WithISBN(isbn)
-                        .WithPrice(price)
-                        .WithQuantity(quantity)
-                        .Build();
+                    Book book = bookFactory.CreateBook(title, author, isbn, price, quantity);
+                    bookServiceBridge.AddBook(book);
+                    Console.WriteLine("Book added successfully.");
                 }
                 else
                 {
