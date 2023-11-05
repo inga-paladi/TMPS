@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using BookstoreInventoryApp.Domain;
+using OnlineBook.Domain;
 
-namespace BookstoreInventoryApp.Client.Commands
+namespace OnlineBook.Client.Commands
 {
     public class SearchBooksCommand : ICommand
     {
-        private readonly IBookService bookService;
+        private readonly IBookServiceBridge bookServiceBridge;
 
-        public SearchBooksCommand(IBookService bookService)
+        public SearchBooksCommand(IBookServiceBridge bookServiceBridge)
         {
-            this.bookService = bookService;
+            this.bookServiceBridge = bookServiceBridge;
         }
 
         public void Execute()
@@ -18,7 +18,7 @@ namespace BookstoreInventoryApp.Client.Commands
             Console.WriteLine("Search Books");
             Console.Write("Enter search term: ");
             string searchTerm = Console.ReadLine();
-            List<Book> books = bookService.SearchBooks(searchTerm);
+            List<Book> books = bookServiceBridge.SearchBooks(searchTerm);
             if (books.Count == 0)
             {
                 Console.WriteLine("No matching books found.");

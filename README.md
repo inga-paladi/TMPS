@@ -1,191 +1,97 @@
-﻿## TOPIC : SOLID Principles
+﻿## TOPIC : Structural Design Patterns
 ### Course: Software Design Techniques and Mechanisms
 ### Author: Paladi Inga, FAF-212
 
 ## Theory
- SOLID is a set of five object-oriented design principles intended to make software designs more maintainable, flexible, and easy to understand. The acronym stands for Single Responsibility Principle, Open-Closed Principle, Liskov Substitution Principle, Interface Segregation Principle, and Dependency Inversion Principle. Each principle addresses a specific aspect of software design, such as the organization of responsibilities, the handling of dependencies, and the design of interfaces. By following these principles, software developers can create more modular, testable, and reusable code that is easier to modify and extend over time. These principles are widely accepted and adopted in the software development community and can be applied to any object-oriented programming language.
-
+Structural design patterns are a category of design patterns that focus on the composition of classes and objects to form larger structures and systems. They provide a way to organize objects and classes in a way that is both flexible and efficient, while allowing for the reuse and modification of existing code. Structural design patterns address common problems encountered in the composition of classes and objects, such as how to create new objects that inherit functionality from existing objects, how to create objects that share functionality without duplicating code, or how to define relationships between objects in a flexible and extensible way.
+Some examples of from this category of design patterns are:
+* Adapter
+* Bridge
+* Composite
+* Decorator
+* Facade
+* Flyweight
+* Proxy
 
 ## Objectives:
-* Study and understand the SOLID Principles.
-*  Choose a domain, define its main classes/models/entities and choose the appropriate instantiation mechanisms.
-*  Create a sample project that respects SOLID Principles.
+* Study and understand the Structural Design Patterns.
+* As a continuation of the previous laboratory work, think about the functionalities that your system will need to provide to the user.
+* Implement some additional functionalities, or create a new project using structural design patterns.
+
 
 ## Main tasks:
-* Choose an OO programming language and a suitable IDE or Editor (No frameworks/libs/engines allowed).
-* Select a domain area for the sample project.
-* Define the main involved classes and think about what instantia
-tion mechanisms are needed.
-*  Respect SOLID Principles in your project.
+1.  By creating a new project, or extending your last one (Lab work Nr2), implement at least 2 structural design patterns in your project:
 
+* The implemented design pattern should help to perform the tasks involved in your system.
+* The object creation mechanisms/patterns can now be buried into the functionalities instead of using them into the client.
+There should only be one client for the whole system.
+2. Keep your files grouped (into packages/directories) by their responsibilities 
 
 
 ## Implementation description
-1. Single Responsibility Principle (SRP):
-Each class in this project has a single responsibility.
-For example, the `AddBookCommand` class is responsible for 
-adding a book, the `UserInterface` class manages user
-interactions, and the `BookService` class handles
-book-related operations. These classes do not have
-multiple responsibilities.
+1. Decorator Pattern
+ This pattern allows behavior to be added to an individual object, either statically or dynamically, without affecting the behavior of other objects from the same class. In this code, the `LoggingBookServiceDecorator` decorates the `IBookService` interface to add logging functionality. It intercepts calls to methods like `AddBook`, `EditBook`, and `RemoveBook`, logs the actions, and then delegates the call to the underlying bookService. For example, when a book is added or edited, the decorator logs the action using the provided logger.
 ```
-public class UserInterface
-    {
-        private readonly Dictionary<int, ICommand> commands;
-
-        public UserInterface(Dictionary<int, ICommand> commands)
-        {
-            this.commands = commands;
-        }
-
-        public void Run()
-        {
-            while (true)
-            {
-                Console.WriteLine("Bookstore Inventory Management");
-                Console.WriteLine("1. Add Book");
-                Console.WriteLine("2. Remove Book");
-                Console.WriteLine("3. List Books");
-                Console.WriteLine("4. Search Books");
-                Console.WriteLine("5. Exit");
-                Console.Write("Enter your choice: ");
-
-                if (int.TryParse(Console.ReadLine(), out int choice))
-                {
-                    if (commands.TryGetValue(choice, out ICommand command))
-                    {
-                        command.Execute();
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid choice. Please try again.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Invalid input. Please enter a number.");
-                }
-
-                Console.WriteLine();
-            }
-        }
-    }
-``` 
-2. Open/Closed Principle (OCP):
-The code is open for extension and closed for 
-modification. You can add new commands by creating new 
-classes that implement the `ICommand` interface without 
-modifying existing code. For example, adding a new command 
-for updating a book would not require changes to the existing
-classes
-```
-namespace BookstoreInventoryApp.Client
+public class LoggingBookServiceDecorator : IBookService
 {
-    public interface ICommand
+    // ...
+    public void AddBook(Book book)
     {
-        void Execute();
+        bookService.AddBook(book);
+        logger.Log($"Added book: {book.Title}");
+    }
+    // ...
+}
+```
+2. Facade Pattern
+The `OnlineBookFacade` acts as a facade that provides a simplified and unified interface to interact with the complex system of managing books.
+It hides the complexities of creating and using various components like `IBookServiceBridge`, `BookFactory`, and `BookFlyweightFactory`, making it easier for clients to use the system. 
+```
+public class OnlineBookFacade
+{
+    // ...
+    public void Run()
+    {
+        // ...
+        UserInterface ui = new UserInterface(commands, bookServiceBridge);
+        ui.Run();
+    }
+    // ...
+}
+```
+3. Flyweight Pattern
+The Flyweight pattern is used in the `BookFlyweight` and `BookFlyweightFactory` classes. It's designed to minimize memory usage when dealing with a large number of similar objects. In this case, it's used to create and manage book objects that share common data, such as title, author, and ISBN, in a memory-efficient way. The `BookFlyweightFactory` ensures that only one instance of a book with specific attributes is created and reused.
+```
+public class BookFlyweightFactory
+{
+    private Dictionary<string, IBookFlyweight> flyweights = new Dictionary<string, IBookFlyweight>();
+
+    public IBookFlyweight GetBookFlyweight(string title, string author, string isbn)
+    {
+        string key = $"{title}-{author}-{isbn}";
+        if (!flyweights.ContainsKey(key))
+        {
+            flyweights[key] = new BookFlyweight(title, author, isbn);
+        }
+        return flyweights[key];
     }
 }
-
 ```
-3. Liskov Substitution Principle (LSP)
-UserInterface class takes a list of ICommand objects, 
-and it uses the Execute method on these objects when 
-the user selects a command (e.g., "Add Book" or
-"Remove Book"). This behavior ensures that different 
-command implementations can be seamlessly plugged into 
-the user interface without 
-changing the core logic of the interface.
-    `ICommand` interface, which serves as the base class (or contract) for all command-related operations. This interface ensures that all derived command classes (such as EditBookCommand and RemoveBookCommand) implement the Execute method, allowing them to be used interchangeably
-where an ICommand is expected.
+4. Bridge Pattern
+The Bridge pattern is employed in the `BookServiceBridge` class, which acts as an intermediary between the client code and the book service. It allows the client to interact with the book service through an abstract interface (`IBookServiceBridge`). This decouples the client code from the specific book service implementation (`IBookService`) and allows for easy substitution of different book service implementations without affecting the client code.
 ```
-public class RemoveBookCommand : ICommand
-    {
-        private readonly IBookService bookService;
-
-        public RemoveBookCommand(IBookService bookService)
-        {
-            this.bookService = bookService;
-        }
-
-        public void Execute()
-        {
-            Console.WriteLine("Remove Book");
-            Console.Write("Enter the book ID to remove: ");
-
-            if (int.TryParse(Console.ReadLine(), out int bookId))
-            {
-                bookService.RemoveBook(bookId);
-                Console.WriteLine("Book removed successfully.");
-            }
-            else
-            {
-                Console.WriteLine("Invalid book ID. Please enter a valid number.");
-            }
-        }
-    }
-```
-4.Interface Segregation Principle (ISP):
-
-The interfaces (`ICommand`, `IBookService`, `ILogger`) are
-focused on specific contracts, and classes only implement
-the methods that are relevant to their responsibilities. 
-For instance, `IBookService` includes methods 
-related to book
-management, 
-while `ILogger` includes only the Log method.
-```
-public interface ILogger
-    {
-        void Log(string message);
-    }
-```
-5. Dependency Inversion Principle (DIP):
-tates that high-level modules should not depend on low-level modules
-The Logger class implements the `ILogger` interface.
-This allows the `Logger` class to act as a concrete 
-implementation of the logging functionality, but it does so by adhering to an interface.
-In this code, the `BookService` class depends on `ILogger`,
-which is an abstraction (interface) rather than a specific implementation.
-This adherence to the interface (ILogger) follows the DIP principle because high-level modules (e.g., BookService) depend on abstractions 
-(ILogger).
-```
-// ILogger interface
-public interface ILogger
+public class BookServiceBridge : IBookServiceBridge
 {
-    void Log(string message);
+    private readonly IBookService bookService;
+
+    public BookServiceBridge(IBookService bookService)
+    {
+        this.bookService = bookService;
+    }
+
+    // Methods here act as a bridge to the actual book service implementation.
 }
 
-// Logger class implementing ILogger
-public class Logger : ILogger
-{
-    public void Log(string message)
-    {
-        Console.WriteLine($"[LOG] {DateTime.Now}: {message}");
-    }
-}
-
-```
-Dependency injection is used in the BookService class to inject an ILogger instance.
-This means that the BookService class doesn't create or depend on a specific
-implementation of the logger;
-it relies on whatever implementation is provided through its constructor.
-This allows you to change the logging behavior by providing a different 
-implementation of ILogger without modifying the BookService class.
-```
-public class BookService : IBookService
-{
-    private readonly List<Book> books;
-    private readonly ILogger logger;
-
-    public BookService(ILogger logger)
-    {
-        this.books = new List<Book>();
-        this.logger = logger; 
-    }
-
-    ...
-}
 ```
 ## Conclusion
-In this laboratory work, we have demonstrated how the application of SOLID principles can lead to code that is not only more straightforward to comprehend but also easier to maintain and expand upon. These guiding principles significantly contribute to the creation of robust and adaptable software systems that are less susceptible to defects and more readily adjustable to evolving requirements.
+In this laboratory work, I have explored and applied four essential structural design patterns, namely the Decorator, Facade, Flyweight, and Bridge patterns, to create a well-structured and modular book inventory management system. Each pattern serves a distinct purpose in enhancing the system's functionality and maintainability. These design patterns have not only improved the code's organization and maintainability but also demonstrated their significance in building flexible and scalable software systems.

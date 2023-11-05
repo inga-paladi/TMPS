@@ -1,6 +1,6 @@
-﻿using BookstoreInventoryApp.Domain;
+﻿using OnlineBook.Domain;
 
-namespace BookstoreInventoryApp.Factory
+namespace OnlineBook.Factory
 {
     public class BookFactory
     {

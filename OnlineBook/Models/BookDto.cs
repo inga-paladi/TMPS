@@ -1,4 +1,4 @@
-﻿namespace BookstoreInventoryApp.Models
+﻿namespace OnlineBook.Models
 {
     public class BookDto
     {

@@ -1,4 +1,4 @@
-﻿using BookstoreInventoryApp.Domain;
+﻿using OnlineBook.Domain;
 
 public interface IBookService
 {

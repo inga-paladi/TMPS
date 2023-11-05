@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using BookstoreInventoryApp.Domain;
+using OnlineBook.Domain;
 
-namespace BookstoreInventoryApp.Client.Commands
+namespace OnlineBook.Client.Commands
 {
     public class ListBooksCommand : ICommand
     {
-        private readonly IBookService bookService;
+        private readonly IBookServiceBridge bookServiceBridge;
 
-        public ListBooksCommand(IBookService bookService)
+        public ListBooksCommand(IBookServiceBridge bookServiceBridge)
         {
-            this.bookService = bookService;
+            this.bookServiceBridge = bookServiceBridge;
         }
 
         public void Execute()
         {
             Console.WriteLine("List of Books");
-            List<Book> books = bookService.ListBooks();
+            List<Book> books = bookServiceBridge.ListBooks();
             foreach (var book in books)
             {
                 Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Author: {book.Author}, Price: {book.Price:C}, Quantity: {book.Quantity}");

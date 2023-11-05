@@ -1,17 +1,17 @@
 ﻿using System;
-using BookstoreInventoryApp.Domain;
-using BookstoreInventoryApp.Factory;
+using OnlineBook.Domain;
+using OnlineBook.Factory;
 
-namespace BookstoreInventoryApp.Client.Commands
+namespace OnlineBook.Client.Commands
 {
     public class AddBookCommand : ICommand
     {
-        private readonly IBookService bookService;
+        private readonly IBookServiceBridge bookServiceBridge;
         private readonly BookFactory bookFactory;
 
-        public AddBookCommand(IBookService bookService, BookFactory bookFactory)
+        public AddBookCommand(IBookServiceBridge bookServiceBridge, BookFactory bookFactory)
         {
-            this.bookService = bookService;
+            this.bookServiceBridge = bookServiceBridge;
             this.bookFactory = bookFactory;
         }
 
@@ -33,7 +33,7 @@ namespace BookstoreInventoryApp.Client.Commands
                 if (int.TryParse(Console.ReadLine(), out int quantity))
                 {
                     Book book = bookFactory.CreateBook(title, author, isbn, price, quantity);
-                    bookService.AddBook(book);
+                    bookServiceBridge.AddBook(book);
                     Console.WriteLine("Book added successfully.");
                 }
                 else
