@@ -9,8 +9,9 @@ static void Main(string[] args)
     BookFactory bookFactory = new BookFactory();
     IBookServiceBridge bookServiceBridge = new BookServiceBridge(bookService);
     BookFlyweightFactory flyweightFactory = new BookFlyweightFactory();
+    IBookSortStrategy defaultSortStrategy = new SortByTitleStrategy();
 
-    OnlineBookFacade facade = new OnlineBookFacade(bookServiceBridge, bookFactory, flyweightFactory );
+    OnlineBookFacade facade = new OnlineBookFacade(bookServiceBridge, bookFactory, flyweightFactory, defaultSortStrategy);
     facade.Run();
     Console.ReadLine();
 }

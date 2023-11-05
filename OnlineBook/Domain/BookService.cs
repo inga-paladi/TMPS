@@ -1,9 +1,11 @@
 ﻿using OnlineBook.Domain;
+using System;
 
 public class BookService : IBookService
 {
     private readonly List<Book> books;
     private readonly ILogger logger;
+    private readonly List<IBookAddedObserver> observers = new List<IBookAddedObserver>();
 
     public BookService(ILogger logger)
     {
@@ -15,6 +17,11 @@ public class BookService : IBookService
     {
         books.Add(book);
         logger.Log($"Added book: {book.Title}");
+        
+        foreach (var observer in observers)
+        {
+            observer.BookAdded(book);
+        }
     }
 
     public void EditBook(int bookId, Book updatedBook)
