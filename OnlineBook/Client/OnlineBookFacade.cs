@@ -11,12 +11,14 @@ namespace OnlineBook.Client
         private readonly IBookServiceBridge bookServiceBridge;
         private readonly BookFactory bookFactory;
         private readonly BookFlyweightFactory flyweightFactory;
+        private readonly IBookSortStrategy defaultSortStrategy;
 
-        public OnlineBookFacade(IBookServiceBridge bookServiceBridge, BookFactory bookFactory, BookFlyweightFactory flyweightFactory)
+        public OnlineBookFacade(IBookServiceBridge bookServiceBridge, BookFactory bookFactory, BookFlyweightFactory flyweightFactory, IBookSortStrategy defaultSortStrategy)
         {
             this.bookServiceBridge = bookServiceBridge;
             this.bookFactory = bookFactory;
             this.flyweightFactory = flyweightFactory;
+            this.defaultSortStrategy = defaultSortStrategy;
         }
 
         public void Run()
@@ -26,7 +28,7 @@ namespace OnlineBook.Client
                 { 1, new AddBookCommand(bookServiceBridge, bookFactory) },
                 { 2, new EditBookCommand(bookServiceBridge) },  
                 { 3, new RemoveBookCommand(bookServiceBridge) },
-                { 4, new ListBooksCommand(bookServiceBridge) },
+                { 4, new ListBooksCommand(bookServiceBridge, defaultSortStrategy) },
                 { 5, new SearchBooksCommand(bookServiceBridge) },
             };
 
