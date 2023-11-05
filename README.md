@@ -1,4 +1,4 @@
-﻿## TOPIC : Behavioral Design Patterns
+## TOPIC : Behavioral Design Patterns
 ### Course: Software Design Techniques and Mechanisms
 ### Author: Paladi Inga, FAF-212
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using OnlineBook.Domain;
 using OnlineBook.Factory;
 

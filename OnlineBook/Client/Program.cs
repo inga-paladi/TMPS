@@ -1,4 +1,4 @@
-﻿using OnlineBook.Client.Commands;
+using OnlineBook.Client.Commands;
 using OnlineBook.Client;
 using OnlineBook.Domain;
 using OnlineBook.Factory;
